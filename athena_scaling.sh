@@ -1,6 +1,6 @@
 #!/bin/bash -l
 #PBS -q run_next
-#PBS -l select=16:ncpus=64:ngpus=4,walltime=00:30:00
+#PBS -l select=16:ncpus=64:ngpus=4,walltime=03:30:00
 #PBS -j n
 #PBS -k doe
 #PBS -S /bin/bash
@@ -47,8 +47,16 @@ csv_result_file="athena_weak_multinode_mpi.csv"
 n1_mb=8
 n2_mb=8
 n3_mb=8
-# 256^3 base resolution for 32^3 MeshBlocks
+# 256^3 base resolution for 32^3 MeshBlocks with time/cfl_number=0.3 RK2+PPM
+# ----> dt=1.171875e-01 fixed with ncycles=854
 num_blocks_per_rank=$((${n1_mb}*${n2_mb}*${n3_mb}))
+
+base_x1min=-50.0
+base_x1max=50.0
+base_x2min=-50.0
+base_x2max=50.0
+base_x3min=-50.0
+base_x3max=50.0
 
 for num_nodes in ${node_count[*]}
 do
@@ -57,9 +65,12 @@ do
     mesh_nx2=$((${n2_mb} * ${block_nx}))
     # Simply stack each additional MPI rank's MeshBlocks in x3
     mesh_nx3=$((${n3_mb} * ${block_nx} * ${num_ranks}))
-    runtime_cmd="meshblock/nx1=${block_nx} meshblock/nx2=${block_nx} meshblock/nx3=${block_nx} mesh/nx1=${mesh_nx1} mesh/nx2=${mesh_nx2} mesh/nx3=${mesh_nx3} 2>&1 | tee bare_athena_output.txt" # mesh/x3min=${mesh_x3min} mesh/x3max=${mesh_x3max}"
-    echo "mpiexec -np ${num_ranks} -ppn ${num_ranks_per_node} ./gpu_affinity.sh ${runtime_cmd}"
-    mpiexec -np ${num_ranks} -ppn ${num_ranks_per_node} ./gpu_affinity.sh ${runtime_cmd}
+    # Expand the lx3 dimension limits to preserve dx3 and hence dt
+    mesh_x3max=$(bc <<<"${base_x3max} * ${num_ranks}")
+    mesh_x3min=$(bc <<<"${base_x3min} * ${num_ranks}")
+    runtime_cmd="meshblock/nx1=${block_nx} meshblock/nx2=${block_nx} meshblock/nx3=${block_nx} mesh/nx1=${mesh_nx1} mesh/nx2=${mesh_nx2} mesh/nx3=${mesh_nx3} mesh/x3min=${mesh_x3min} mesh/x3max=${mesh_x3max}"
+    echo "mpiexec -np ${num_ranks} -ppn ${num_ranks_per_node} ./gpu_affinity.sh ${runtime_cmd} | tee bare_athena_output.txt"
+    mpiexec -np ${num_ranks} -ppn ${num_ranks_per_node} ./gpu_affinity.sh ${runtime_cmd} | tee bare_athena_output.txt
     echo -n "${num_nodes} " | tee -a ${csv_result_file} # >> ${multinode_summary_filename}
 
     # Trim the performance metrics from the Athena++ stdout
