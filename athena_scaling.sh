@@ -41,6 +41,8 @@ block_nx=32
 #multinode_summary_filename="athena_weak_multinode_mpi.txt"
 csv_result_file="athena_weak_multinode_mpi.csv"
 
+echo "Num MPI ranks","Num nodes","cpu time used","zone-cycles/cpu_second" | tee -a ${csv_result_file}
+
 # Define mesh for single MPI rank solver:
 # Option #1: In terms of num MeshBlocks in each dim
 # (problem size and runtime will change for block_nx loop)
