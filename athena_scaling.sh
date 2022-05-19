@@ -71,8 +71,7 @@ do
     runtime_cmd="meshblock/nx1=${block_nx} meshblock/nx2=${block_nx} meshblock/nx3=${block_nx} mesh/nx1=${mesh_nx1} mesh/nx2=${mesh_nx2} mesh/nx3=${mesh_nx3} mesh/x3min=${mesh_x3min} mesh/x3max=${mesh_x3max}"
     echo "mpiexec -np ${num_ranks} -ppn ${num_ranks_per_node} ./gpu_affinity.sh ${runtime_cmd} | tee bare_athena_output.txt"
     mpiexec -np ${num_ranks} -ppn ${num_ranks_per_node} ./gpu_affinity.sh ${runtime_cmd} | tee bare_athena_output.txt
-    echo -n "${num_nodes} " | tee -a ${csv_result_file} # >> ${multinode_summary_filename}
-
+    echo -n "${num_ranks},${num_nodes}," | tee -a ${csv_result_file}
     # Trim the performance metrics from the Athena++ stdout
-    tail -n 2 bare_athena_output.txt | sed 's/.* = //' | xargs -n2 | tee -a ${csv_result_file} # >> ${multinode_summary_filename}
+    tail -n 2 bare_athena_output.txt | sed 's/.* = //' | paste -d, -s | tee -a ${csv_result_file}
 done
