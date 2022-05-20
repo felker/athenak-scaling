@@ -1,6 +1,6 @@
 #!/bin/bash -l
 #PBS -q run_next
-#PBS -l select=512:ncpus=64:ngpus=4,walltime=03:30:00
+#PBS -l select=256:ncpus=64:ngpus=4,walltime=02:00:00
 #PBS -j n
 #PBS -k doe
 #PBS -S /bin/bash
@@ -35,7 +35,7 @@ echo $PATH
 echo
 echo $LD_LIBRARY_PATH
 
-node_count=(1 2 4 8 16 32 64 128 256 512)
+node_count=(1 2 4 8 16 32 64 128 256)
 num_ranks_per_node=4
 block_nx=128
 csv_result_file="athena_weak_multinode_mpi.csv"
@@ -46,18 +46,16 @@ echo "Num MPI ranks","Num nodes","cpu time used","zone-cycles/cpu_second" | tee 
 # Option #1: In terms of num MeshBlocks in each dim
 # (problem size and runtime will change for block_nx loop)
 n1_mb=2
-n2_mb=2
-n3_mb=4
-# 256^3 base resolution for 32^3 MeshBlocks with time/cfl_number=0.3 RK2+PPM
-# ----> dt=1.171875e-01 fixed with ncycles=854
+n2_mb=1
+n3_mb=1
 num_blocks_per_rank=$((${n1_mb}*${n2_mb}*${n3_mb}))
 
-base_x1min=-50.0
-base_x1max=50.0
-base_x2min=-50.0
-base_x2max=50.0
-base_x3min=-100.0
-base_x3max=100.0
+base_x1min=0.0
+base_x1max=6.0
+base_x2min=0.0
+base_x2max=3.0
+base_x3min=0.0
+base_x3max=3.0
 
 for num_nodes in ${node_count[*]}
 do
