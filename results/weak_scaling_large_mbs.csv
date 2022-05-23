@@ -11,6 +11,7 @@ Num MPI ranks,Num nodes,cpu time used,zone-cycles/cpu_second
 256,64,2.993779e+02,2.450349e+10
 512,128,3.021610e+02,4.855560e+10
 1024,256,3.060954e+02,9.586298e+10
+2048,512,3.084101e+02,1.902870e+11
 
 # extra samples (some jitter)
 # 64,16,2.964720e+02,6.185915e+09
