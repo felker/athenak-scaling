@@ -17,3 +17,7 @@ Num MPI ranks,Num nodes,cpu time used,zone-cycles/cpu_second
 # 64,16,2.964720e+02,6.185915e+09
 # 64,16,3.045603e+02,6.021635e+09
 # 256,64,2.992663e+02,2.451263e+10
+# after "export FI_OFI_RXM_RX_SIZE=16384"
+# 2048,512,3.083498e+02,1.903242e+11
+# similarly, for "module swap craype-network-ofi craype-network-ucx"
+# 2048,512,3.083486e+02,1.903249e+11
