@@ -32,7 +32,7 @@ MPIDI_CRAY_init: GPU_SUPPORT_ENABLED is requested, but GTL library is not linked
 ```
 
 Ye:
-> craype-accel-nvidia80 adds --gpu=cc80 but doesn't control using GPU or not. It still require user controlling -acc or -cuda to enable GPU.
+> `craype-accel-nvidia80` adds `--gpu=cc80` but doesn't control using GPU or not. It still require user controlling `-acc` or `-cuda` to enable GPU.
 > `craype-accel-nvidia80` also links GTL library for GPU-aware MPI. You may still link it manually when not using `craype-accel-nvidia80 ` module.
 
 
