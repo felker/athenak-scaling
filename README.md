@@ -9,9 +9,10 @@ See [`results/polaris_scaling.ipynb`](results/polaris_scaling.ipynb) for notes o
 - Environment Modules and Tcl-based Cray modulefiles ----> Lmod and Lua-based Cray modulefiles
 - During AT, the default modules were fine. All I had to do was run `module load craype-accel-nvidia80` during compile-time and export the CUDA-aware MPI environment variable during runtime.
 - Default PE was `PrgEnv-nvidia`. Now, that is deprecated and `PrgEnv-nvhpc` is the default
-- Default modules included `cudatoolkit/11.6` (written by Ti Leggett), or it was loaded by `craype-accel-nvidia80`? See `module list` output saved for posterity in notebok. New Cray `cudatoolkit-standalone/11.4.4` modulefile is Lua. The old `cudatoolkit` would set `PKG_CONFIG_PATH` that would make sure that `#include <cuda_runtime.h>` would be found by the compiler. New one does not use pkg-config and does not set `CPATH`. Need to manually pass `-I  $NVIDIA_PATH/cuda/include/` to compiler if you need it?
+- Default modules included `cudatoolkit/11.6` (written by Ti Leggett), or it was loaded by `craype-accel-nvidia80`? See `module list` output saved for posterity in notebok. New Cray `cudatoolkit-standalone/11.4.4` modulefile is Lua. The old `cudatoolkit` would set `PKG_CONFIG_PATH` that would make sure that `#include <cuda_runtime.h>` would be found by the compiler. New one does not use pkg-config and does not set `CPATH`. Need to manually pass `-I  $NVIDIA_PATH/cuda/include/` to compiler and `-L${NVIDIA_PATH}/cuda/lib64 -lcudart` to linker if you need it. 
 
 ## Reminder: GPUDirect RDMA and CUDA-aware MPI configuration
+See example https://github.com/felker/cuda-aware-mpi-example
 
 **Compile time requirement:**
 ```
