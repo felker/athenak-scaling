@@ -8,8 +8,10 @@ See [`results/polaris_scaling.ipynb`](results/polaris_scaling.ipynb) for notes o
 ## Changes from results (AT, May-June 2022) to post-AT machine behavior
 - Environment Modules and Tcl-based Cray modulefiles ----> Lmod and Lua-based Cray modulefiles
 - During AT, the default modules were fine. All I had to do was run `module load craype-accel-nvidia80` during compile-time and export the CUDA-aware MPI environment variable during runtime.
-- Default PE was `PrgEnv-nvidia`. Now, that is deprecated and `PrgEnv-nvhpc` is the default
-- Default modules included `cudatoolkit/11.6` (written by Ti Leggett), or it was loaded by `craype-accel-nvidia80`? See `module list` output saved for posterity in notebok. New Cray `cudatoolkit-standalone/11.4.4` modulefile is Lua. The old `cudatoolkit` would set `PKG_CONFIG_PATH` that would make sure that `#include <cuda_runtime.h>` would be found by the compiler. New one does not use pkg-config and does not set `CPATH`. Need to manually pass `-I  $NVIDIA_PATH/cuda/include/` to compiler and `-L${NVIDIA_PATH}/cuda/lib64 -lcudart` to linker if you need it. 
+- Default PE was `PrgEnv-nvidia`. Now, that is deprecated and `PrgEnv-nvhpc` is the default, although they are basically identical (see bottom of this README). 
+- Default modules included `cudatoolkit/11.6` (written by Ti Leggett), or it was possibly loaded by `craype-accel-nvidia80`, the only `module load` command I used for AthenaK scaling tests? See `module list` output saved for posterity in notebok; `cudatoolkit` comes before `craype-accel-nvidia80` so was likely devault with `PrgEnv-nvidia`. The `cudatoolkit` module merely pointed to Cray's NVHPC installation. Now, Ye Luo's `cudatoolkit-standalone/11.4.4` modulefile is Lua and points to a separate installation that we maintain. The old `cudatoolkit` would set `PKG_CONFIG_PATH` that could make sure that `#include <cuda_runtime.h>` would be found by the compiler **iff you use pkg-config**; see https://people.freedesktop.org/~dbn/pkg-config-guide.html. New one does not use `pkg-config` and does not set `CPATH`. In both pre-AT and post-AT, you needed to manually pass flags to the compiler to link to CUDA runtime. Now it is `-I  $NVIDIA_PATH/cuda/include/` to compiler and `-L${NVIDIA_PATH}/cuda/lib64 -lcudart` to linker if you need it. 
+
+See more discussion here: https://github.com/felker/conda_install_scripts/blob/master/alcf_polaris/README.md
 
 ## Reminder: GPUDirect RDMA and CUDA-aware MPI configuration
 See example https://github.com/felker/cuda-aware-mpi-example
